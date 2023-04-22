@@ -26,6 +26,20 @@ export class Camera {
     return this;
   }
 
+  rotate(theta: number, phi: number) {
+    const ct = Math.cos(theta), st = Math.sin(theta), cp = Math.cos(phi), sp = Math.sin(phi);
+
+    const x = this.lookAt.x - this.position.x,
+          y = this.lookAt.y - this.position.y,
+          z = this.lookAt.z - this.position.z;
+
+    this.lookAt.x = ct * x - st * cp * z + st * sp * y + this.position.x;
+    this.lookAt.z = st * x + ct * cp * z - ct * sp * y + this.position.z;
+    this.lookAt.y = sp * z + cp * y + this.position.y;
+    this.calcMatrix();
+    return this;
+  }
+
   project(v: Vertex3D): Vertex2D {
     const ratio = (500 / (v.z || 0.000001));
     return new Vertex2D(ratio * v.x, ratio * v.y);
