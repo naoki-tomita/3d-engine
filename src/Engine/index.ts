@@ -9,8 +9,18 @@ import { Vector } from "./Vector";
 import { Color } from "./Color";
 export { Model, CanvasView, Camera, Face, Vertex3D, Vertex2D, Vector, Color, XFileConverter as Converter };
 
+
+type Opt = {
+  drawStroke?: boolean;
+  adjustBrightness?: boolean;
+};
 export class Stage {
-  constructor(readonly view: CanvasView, readonly camera: Camera, readonly objects: Model[]) {}
+  constructor(readonly view: CanvasView, readonly camera: Camera, readonly objects: Model[], private options: Opt = {}) {}
+  setOptions(opt: Opt) {
+    this.options.adjustBrightness = opt.adjustBrightness ?? this.options.adjustBrightness;
+    this.options.drawStroke = opt.drawStroke ?? this.options.drawStroke;
+  }
+
   render() {
     const cameraCoordFaces = this.objects.map(obj =>
       obj.faces.map(f => new Face(
@@ -21,6 +31,7 @@ export class Stage {
       ))
     ).flat();
 
+    const light = new Vector(100, 100, -100);
     this.view.clear()
     cameraCoordFaces
       .sort((a, b) => a.center.z - b.center.z)
@@ -29,7 +40,9 @@ export class Stage {
       // カメラの点（原点）から見て、面の法線ベクトルが90度以上なら、面はあさっての方向を向いていると言える
       .filter(f => f.center.toVector().angle(f.normalVector) <= 0)
       .forEach(f => {
-        this.view.draw(this.camera.project(f.v1), this.camera.project(f.v2), this.camera.project(f.v3), f.color)
+        // light の方向に法線ベクトルが向いている面は明るく、そうでない面は暗くする
+        const color = this.options.adjustBrightness ? f.color.darken(1 - (f.normalVector.angle(light) + 1) / 2) : f.color;
+        this.view.draw(this.camera.project(f.v1), this.camera.project(f.v2), this.camera.project(f.v3), color, this.options.drawStroke ? Color.Black : color);
       });
 
   }

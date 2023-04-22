@@ -6,24 +6,39 @@ type Matrix = number[][]
 
 export class Camera {
   matrix: Matrix;
-  constructor(private position: Vertex3D, private lookAt: Vertex3D) {
+  constructor(readonly position: Vertex3D, readonly lookAt: Vertex3D) {
     this.calcMatrix();
   }
 
-  move({ dx = 0, dy = 0, dz = 0 }: { dx?: number, dy?: number, dz?: number }) {
+  private _move({ dx = 0, dy = 0, dz = 0 }: { dx?: number, dy?: number, dz?: number }) {
     this.position.x += dx;
     this.position.y += dy;
     this.position.z += dz;
+  }
+
+  move(d: { dx?: number, dy?: number, dz?: number }) {
+    this._move(d);
     this.calcMatrix();
     return this;
   }
 
-  moveLookAt({ dx = 0, dy = 0, dz = 0 }: { dx?: number, dy?: number, dz?: number }) {
+  _moveLookAt({ dx = 0, dy = 0, dz = 0 }: { dx?: number, dy?: number, dz?: number }) {
     this.lookAt.x += dx;
     this.lookAt.y += dy;
     this.lookAt.z += dz;
+  }
+
+  moveLookAt(d: { dx?: number, dy?: number, dz?: number }) {
+    this._moveLookAt(d);
     this.calcMatrix();
     return this;
+  }
+
+  moveDirection(forward: number) {
+    const vec = this.lookAt.subtract(this.position).toNormalizedVector();
+    this._move({ dx: vec.x * forward, dy: vec.y * forward, dz: vec.z * forward })
+    this._moveLookAt({ dx: vec.x * forward, dy: vec.y * forward, dz: vec.z * forward });
+    this.calcMatrix();
   }
 
   rotate(theta: number, phi: number) {

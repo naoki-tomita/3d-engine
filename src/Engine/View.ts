@@ -15,7 +15,7 @@ export class CanvasView {
   clear() {
     this.context.clearRect(0, 0, this.width, this.height);
   }
-  draw(v1: Vertex2D, v2: Vertex2D, v3: Vertex2D, color: Color) {
+  draw(v1: Vertex2D, v2: Vertex2D, v3: Vertex2D, color: Color, strokeColor?: Color) {
     const dx = this.width / 2;
     const dy = this.height / 2;
     this.context.beginPath();
@@ -23,7 +23,7 @@ export class CanvasView {
     this.context.lineTo(v2.x + dx, -v2.y + dy);
     this.context.lineTo(v3.x + dx, -v3.y + dy);
     this.context.closePath();
-    this.context.strokeStyle = "black";
+    this.context.strokeStyle = strokeColor?.value ?? color.value;
     this.context.stroke();
     this.context.fillStyle = color.value;
     this.context.fill();
