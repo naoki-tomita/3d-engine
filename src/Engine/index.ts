@@ -38,13 +38,23 @@ class Vertex3D {
   }
 
   toVertex2D() {
-    const ratio = (100 / (this.z || 0.000001));
+    const ratio = (500 / (this.z || 0.000001));
     return new Vertex2D(ratio * this.x, ratio * this.y);
   }
 }
 
 class Vertex2D {
   constructor(readonly x: number, readonly y: number) {}
+}
+
+class Color {
+  static Red = new Color("#f00");
+  static Green = new Color("#0f0");
+  static Blue = new Color("#00f");
+  static Yellow = new Color("yellow");
+  static Black = new Color("black");
+  static Pink = new Color("pink");
+  constructor(readonly value: string) {}
 }
 
 class Face {
@@ -57,7 +67,7 @@ const camera = {
 }
 
 function cube() {
-  const w = 1 / 2, h = 1 / 2, d = 1 / 2, p = { x: 0, y: 0, z: 2 };
+  const w = 1 / 2, h = 1 / 2, d = 1 / 2, p = { x: 0, y: 0, z: 5 };
   const f = [
     new Face(new Vertex3D(p.x - w, p.y - h, p.z - d), new Vertex3D(p.x + w, p.y - h, p.z - d), new Vertex3D(p.x - w, p.y - h, p.z + d)),
     new Face(new Vertex3D(p.x + w, p.y - h, p.z - d), new Vertex3D(p.x + w, p.y - h, p.z + d), new Vertex3D(p.x - w, p.y - h, p.z + d)),
@@ -77,10 +87,6 @@ function cube() {
 }
 
 type Matrix = number[][]
-
-
-
-
 
 
 function transformVector(m: Matrix, v: Vertex3D): Vertex3D {
@@ -153,32 +159,32 @@ render();
 
 window.addEventListener("keydown", (e) => {
   if (e.key === "ArrowUp") {
-    camera.lookAt.y = camera.lookAt.y + 1;
-    // camera.position.y = camera.position.y + 1;
+    camera.lookAt.y = camera.lookAt.y + 0.1;
+    // camera.position.y = camera.position.y + 0.1;
   }
   if (e.key === "ArrowDown") {
-    camera.lookAt.y = camera.lookAt.y - 1;
-    // camera.position.y = camera.position.y - 1;
+    camera.lookAt.y = camera.lookAt.y - 0.1;
+    // camera.position.y = camera.position.y - 0.1;
   }
   if (e.key === "ArrowLeft") {
-    camera.lookAt.x = camera.lookAt.x - 1;
-    // camera.position.x = camera.position.x - 1;
+    camera.lookAt.x = camera.lookAt.x - 0.1;
+    // camera.position.x = camera.position.x - 0.1;
   }
   if (e.key === "ArrowRight") {
-    camera.lookAt.x = camera.lookAt.x + 1;
-    // camera.position.x = camera.position.x + 1;
+    camera.lookAt.x = camera.lookAt.x + 0.1;
+    // camera.position.x = camera.position.x + 0.1;
   }
   if (e.key === "w") {
-    camera.position.y = camera.position.y + 1;
+    camera.position.y = camera.position.y + 0.1;
   }
   if (e.key === "s") {
-    camera.position.y = camera.position.y - 1;
+    camera.position.y = camera.position.y - 0.1;
   }
   if (e.key === "a") {
-    camera.position.x = camera.position.x - 1;
+    camera.position.x = camera.position.x - 0.1;
   }
   if (e.key === "d") {
-    camera.position.x = camera.position.x + 1;
+    camera.position.x = camera.position.x + 0.1;
   }
   const pos = convertPosition(camera.position, camera.lookAt, camera.position);
   console.table([camera.position, camera.lookAt, pos]);
