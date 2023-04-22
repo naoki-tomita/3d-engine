@@ -1,4 +1,6 @@
-import { Color, Vector, Vertex3D } from ".";
+import { Color } from "./Color";
+import { Vector } from "./Vector";
+import { Vertex3D } from "./Vertex3D";
 
 export class Face {
   constructor(readonly v1: Vertex3D, readonly v2: Vertex3D, readonly v3: Vertex3D, readonly color: Color) {}

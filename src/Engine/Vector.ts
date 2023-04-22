@@ -1,4 +1,4 @@
-import { Vertex3D } from ".";
+import { Vertex3D } from "./Vertex3D";
 
 export class Vector {
   constructor(readonly x: number, readonly y: number, readonly z: number) {}

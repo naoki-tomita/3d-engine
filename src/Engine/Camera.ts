@@ -1,9 +1,31 @@
-import { Vector, Vertex2D, Vertex3D } from ".";
+import { Vector } from "./Vector";
+import { Vertex2D } from "./Vertex2D";
+import { Vertex3D } from "./Vertex3D";
 
 type Matrix = number[][]
 
 export class Camera {
-  constructor(public position: Vertex3D, public lookAt: Vertex3D) {}
+  matrix: Matrix;
+  constructor(private position: Vertex3D, private lookAt: Vertex3D) {
+    this.calcMatrix();
+  }
+
+  move({ dx = 0, dy = 0, dz = 0 }: { dx?: number, dy?: number, dz?: number }) {
+    this.position.x += dx;
+    this.position.y += dy;
+    this.position.z += dz;
+    this.calcMatrix();
+    return this;
+  }
+
+  moveLookAt({ dx = 0, dy = 0, dz = 0 }: { dx?: number, dy?: number, dz?: number }) {
+    this.lookAt.x += dx;
+    this.lookAt.y += dy;
+    this.lookAt.z += dz;
+    this.calcMatrix();
+    return this;
+  }
+
   project(v: Vertex3D): Vertex2D {
     const ratio = (500 / (v.z || 0.000001));
     return new Vertex2D(ratio * v.x, ratio * v.y);
@@ -26,18 +48,21 @@ export class Camera {
     return new Vertex3D(result[0] / result[3], result[1] / result[3], result[2] / result[3]);
   }
 
-  convertPosition(v: Vertex3D): Vertex3D {
+  private calcMatrix() {
     const cameraForward = this.lookAt.subtract(this.position).toNormalizedVector();
     const worldUp = new Vector(0, 1, 0);
     const cameraRight = cameraForward.cross(worldUp).normalize();
     const cameraUp = cameraRight.cross(cameraForward);
-    const matrix = [
+    this.matrix = [
       [cameraRight.x, cameraUp.x, cameraForward.x, 0],
       [cameraRight.y, cameraUp.y, cameraForward.y, 0],
       [cameraRight.z, cameraUp.z, cameraForward.z, 0],
       [0,             0,          0,               1],
     ];
-    const r = this.transformVector(matrix, this.position.subtract(v));
+  }
+
+  convertPosition(v: Vertex3D): Vertex3D {
+    const r = this.transformVector(this.matrix, this.position.subtract(v));
     return r;
   }
 }

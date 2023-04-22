@@ -1,4 +1,4 @@
-import { Vector } from ".";
+import { Vector } from "./Vector";
 
 export class Vertex3D {
   constructor(public x: number, public y: number, public z: number) {}
@@ -17,5 +17,11 @@ export class Vertex3D {
 
   toVector() {
     return new Vector(this.x, this.y, this.z);
+  }
+
+  move({ dx = 0, dy = 0, dz = 0 }: { dx?: number, dy?: number, dz?: number }) {
+    this.x += dx;
+    this.y += dy;
+    this.z += dz;
   }
 }

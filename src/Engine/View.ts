@@ -1,4 +1,5 @@
-import { Color, Vertex2D } from ".";
+import { Color } from "./Color";
+import { Vertex2D } from "./Vertex2D";
 
 export class CanvasView {
   context: CanvasRenderingContext2D;
