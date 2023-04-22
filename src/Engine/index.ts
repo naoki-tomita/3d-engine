@@ -1,11 +1,11 @@
-class Model {
+export class Model {
   constructor(readonly faces: Face[]) {}
   get vertices(): Vertex3D[] {
     return this.faces.map(it => [it.v1, it.v2, it.v3]).flat();
   }
 }
 
-class Vector {
+export class Vector {
   constructor(readonly x: number, readonly y: number, readonly z: number) {}
   get norm(): number {
     return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2));
@@ -25,11 +25,17 @@ class Vector {
       this.x * other.y - this.y * other.x
     );
   }
+  dot(other: Vector): number {
+    return this.x * other.x + this.y * other.y + this.z * other.z;
+  }
   toVertex3D() {
     return new Vertex3D(this.x, this.y ,this.z);
   }
+  angle(other: Vector) {
+    return this.dot(other) / (this.norm * other.norm);
+  }
 }
-class Vertex3D {
+export class Vertex3D {
   constructor(public x: number, public y: number, public z: number) {}
 
   subtract(other: Vertex3D): Vertex3D {
@@ -49,11 +55,11 @@ class Vertex3D {
   }
 }
 
-class Vertex2D {
+export class Vertex2D {
   constructor(readonly x: number, readonly y: number) {}
 }
 
-class Color {
+export class Color {
   static Red:    Color = new Color(255, 0, 0)
   static Green:  Color = new Color(0, 255, 0)
   static Blue:   Color = new Color(0, 0, 255)
@@ -78,7 +84,7 @@ class Color {
   }
 }
 
-class Face {
+export class Face {
   constructor(readonly v1: Vertex3D, readonly v2: Vertex3D, readonly v3: Vertex3D, readonly color: Color) {}
   get normalVector(): Vector {
     const vec1 = this.v2.subtract(this.v1).toVector();
@@ -92,25 +98,6 @@ class Face {
       (this.v1.z + this.v2.z + this.v3.z) / 3,
     )
   }
-}
-
-function cube(x: number, y: number, z: number, size: number) {
-  const w = size / 2, h = size / 2, d = size / 2, p = { x: x, y: y, z: z };
-  const f = [
-    new Face(new Vertex3D(p.x - w, p.y - h, p.z - d), new Vertex3D(p.x + w, p.y - h, p.z - d), new Vertex3D(p.x - w, p.y - h, p.z + d), Color.Red),
-    new Face(new Vertex3D(p.x + w, p.y - h, p.z - d), new Vertex3D(p.x + w, p.y - h, p.z + d), new Vertex3D(p.x - w, p.y - h, p.z + d), Color.Red),
-    new Face(new Vertex3D(p.x - w, p.y - h, p.z + d), new Vertex3D(p.x + w, p.y - h, p.z + d), new Vertex3D(p.x - w, p.y + h, p.z + d), Color.Blue),
-    new Face(new Vertex3D(p.x - w, p.y + h, p.z + d), new Vertex3D(p.x + w, p.y - h, p.z + d), new Vertex3D(p.x + w, p.y + h, p.z + d), Color.Blue),
-    new Face(new Vertex3D(p.x + w, p.y - h, p.z - d), new Vertex3D(p.x + w, p.y + h, p.z - d), new Vertex3D(p.x + w, p.y - h, p.z + d), Color.Green),
-    new Face(new Vertex3D(p.x + w, p.y + h, p.z - d), new Vertex3D(p.x + w, p.y + h, p.z + d), new Vertex3D(p.x + w, p.y - h, p.z + d), Color.Green),
-    new Face(new Vertex3D(p.x - w, p.y + h, p.z - d), new Vertex3D(p.x - w, p.y + h, p.z + d), new Vertex3D(p.x + w, p.y + h, p.z - d), Color.Orange),
-    new Face(new Vertex3D(p.x + w, p.y + h, p.z - d), new Vertex3D(p.x - w, p.y + h, p.z + d), new Vertex3D(p.x + w, p.y + h, p.z + d), Color.Orange),
-    new Face(new Vertex3D(p.x - w, p.y - h, p.z - d), new Vertex3D(p.x - w, p.y - h, p.z + d), new Vertex3D(p.x - w, p.y + h, p.z + d), Color.Pink),
-    new Face(new Vertex3D(p.x - w, p.y - h, p.z - d), new Vertex3D(p.x - w, p.y + h, p.z + d), new Vertex3D(p.x - w, p.y + h, p.z - d), Color.Pink),
-    new Face(new Vertex3D(p.x - w, p.y - h, p.z - d), new Vertex3D(p.x - w, p.y + h, p.z - d), new Vertex3D(p.x + w, p.y - h, p.z - d), Color.Yellow),
-    new Face(new Vertex3D(p.x + w, p.y - h, p.z - d), new Vertex3D(p.x - w, p.y + h, p.z - d), new Vertex3D(p.x + w, p.y + h, p.z - d), Color.Yellow),
-  ];
-  return new Model(f);
 }
 
 type Matrix = number[][]
@@ -148,98 +135,65 @@ function convertPosition(p: Vertex3D, l: Vertex3D, v: Vertex3D): Vertex3D {
   return r;
 }
 
-const c = document.querySelector("canvas")!.getContext("2d")!;
-const width = document.querySelector("canvas")!.width;
-const height = document.querySelector("canvas")!.height;
-// low level api.
-function clear() {
-  c.clearRect(0, 0, width, height);
+export class Stage {
+  constructor(readonly view: CanvasView, readonly camera: Camera, readonly objects: Model[]) {}
+  render() {
+    const cameraCoordFaces = this.objects.map(obj =>
+      obj.faces.map(f => new Face(
+        convertPosition(this.camera.position, this.camera.lookAt, f.v1),
+        convertPosition(this.camera.position, this.camera.lookAt, f.v2),
+        convertPosition(this.camera.position, this.camera.lookAt, f.v3),
+        f.color,
+      ))
+    ).flat();
+
+    this.view.clear()
+    cameraCoordFaces
+      .sort((a, b) => a.center.z - b.center.z)
+      // カメラの前方にいるものだけ描画する
+      .filter(f => (f.v1.z < 0) && (f.v2.z < 0) && (f.v3.z < 0))
+      // カメラの点（原点）から見て、面の法線ベクトルが90度以上なら、面はあさっての方向を向いていると言える
+      .filter(f => f.center.toVector().angle(f.normalVector) <= 0)
+      .forEach(f => {
+        this.view.draw(this.camera.project(f.v1), this.camera.project(f.v2), this.camera.project(f.v3), f.color)
+      });
+
+  }
 }
 
-function draw(v1: Vertex2D, v2: Vertex2D, v3: Vertex2D, color: Color) {
-  const dx = width / 2;
-  const dy = height / 2;
-  c.beginPath();
-  c.moveTo(v1.x + dx, -v1.y + dy);
-  c.lineTo(v2.x + dx, -v2.y + dy);
-  c.lineTo(v3.x + dx, -v3.y + dy);
-  c.closePath();
-  c.strokeStyle = color.value;
-  c.stroke();
-  c.fillStyle = color.value;
-  c.fill();
+export class CanvasView {
+  context: CanvasRenderingContext2D;
+  width: number;
+  height: number;
+  constructor() {
+    const canvas = document.querySelector("canvas")!
+    this.context = canvas.getContext("2d")!;
+    this.width = canvas.width;
+    this.height = canvas.height;
+
+  }
+  clear() {
+    this.context.clearRect(0, 0, this.width, this.height);
+  }
+  draw(v1: Vertex2D, v2: Vertex2D, v3: Vertex2D, color: Color) {
+    const dx = this.width / 2;
+    const dy = this.height / 2;
+    this.context.beginPath();
+    this.context.moveTo(v1.x + dx, -v1.y + dy);
+    this.context.lineTo(v2.x + dx, -v2.y + dy);
+    this.context.lineTo(v3.x + dx, -v3.y + dy);
+    this.context.closePath();
+    this.context.strokeStyle = "black";
+    this.context.stroke();
+    this.context.fillStyle = color.value;
+    this.context.fill();
+  }
 }
 
-class Camera {
+export class Camera {
   constructor(public position: Vertex3D, public lookAt: Vertex3D) {}
   project(v: Vertex3D): Vertex2D {
     const ratio = (500 / (v.z || 0.000001));
     return new Vertex2D(ratio * v.x, ratio * v.y);
   }
 }
-
-const camera = new Camera(new Vertex3D(1, 1, 1), new Vertex3D(1, 1, 2));
-const obj1 = cube(1, 1, 2, 0.1);
-const obj2 = cube(1, 1, 4, 0.5);
-function render() {
-  const cameraCoordFaces = [obj1, obj2].map(obj =>
-    obj.faces.map(f => new Face(
-      convertPosition(camera.position, camera.lookAt, f.v1),
-      convertPosition(camera.position, camera.lookAt, f.v2),
-      convertPosition(camera.position, camera.lookAt, f.v3),
-      f.color,
-    ))
-  ).flat();
-
-  clear();
-  cameraCoordFaces
-    .sort((a, b) => a.center.z - b.center.z)
-    // カメラの前方にいるものだけにいるものは描画する必要がない
-    .filter(f => (f.v1.z < 0) && (f.v2.z < 0) && (f.v3.z < 0))
-    .filter(f => f.normalVector.z >= 0)
-    .forEach(f => {
-      draw(camera.project(f.v1), camera.project(f.v2), camera.project(f.v3), f.color)
-    });
-  requestAnimationFrame(render);
-}
-render();
-
-window.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowUp") {
-    camera.lookAt.z = camera.lookAt.z + 0.1;
-    camera.position.z = camera.position.z + 0.1;
-  }
-  if (e.key === "ArrowDown") {
-    camera.lookAt.z = camera.lookAt.z - 0.1;
-    camera.position.z = camera.position.z - 0.1;
-  }
-  if (e.key === "ArrowLeft") {
-    camera.lookAt.x = camera.lookAt.x + 0.1;
-    camera.position.x = camera.position.x + 0.1;
-  }
-  if (e.key === "ArrowRight") {
-    camera.lookAt.x = camera.lookAt.x - 0.1;
-    camera.position.x = camera.position.x - 0.1;
-  }
-  if (e.key === " ") {
-    camera.lookAt.y = camera.lookAt.y + 0.1;
-    camera.position.y = camera.position.y + 0.1;
-  }
-  if (e.key === "Control") {
-    camera.lookAt.y = camera.lookAt.y - 0.1;
-    camera.position.y = camera.position.y - 0.1;
-  }
-
-  if (e.key === "w") {
-    camera.lookAt.z = camera.lookAt.z + 0.1;
-  }
-  if (e.key === "s") {
-    camera.lookAt.z = camera.lookAt.z - 0.1;
-  }
-  if (e.key === "a") {
-    camera.lookAt.x = camera.lookAt.x + 0.1;
-  }
-  if (e.key === "d") {
-    camera.lookAt.x = camera.lookAt.x - 0.1;
-  }
-});
