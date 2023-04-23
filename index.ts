@@ -1,17 +1,19 @@
 import { Stage, Camera, CanvasView, Vertex3D } from "./src/Engine";
 import { Cube } from "./src/Models/Cube";
 import { Cup } from "./src/Models/Cup";
+import { Van } from "./src/Models/Van";
 
 
 async function main() {
   const adjustBrightness = document.getElementById("adjust-brightness") as HTMLInputElement;
   const drawStroke = document.getElementById("draw-stroke") as HTMLInputElement;
-  const camera = new Camera(new Vertex3D(1, 1, 1), new Vertex3D(0, 0, 2));
+  const camera = new Camera(new Vertex3D(40, 40, 40), new Vertex3D(0, 0, 0));
   const obj1 = new Cube(0, 0, 1, 0.1);
   const obj2 = new Cube(0, 0, 3, 0.5);
   const cup = await Cup.load().then(it => it.move({ dy: -1, dz: 3 }));
+  const van = await Van.load().then(it => it.move({ dy: 0, dz: -5 }));
   const view = new CanvasView();
-  const stage = new Stage(view, camera, [cup, obj1, obj2], { adjustBrightness: adjustBrightness.checked, drawStroke: drawStroke.checked })
+  const stage = new Stage(view, camera, [van], { adjustBrightness: adjustBrightness.checked, drawStroke: drawStroke.checked })
   adjustBrightness.addEventListener("change", () => stage.setOptions({ adjustBrightness: adjustBrightness.checked }))
   drawStroke.addEventListener("change", () => stage.setOptions({ drawStroke: drawStroke.checked }));
 
