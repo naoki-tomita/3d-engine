@@ -1,11 +1,9 @@
 import { Model } from "../../Engine";
 import { XFileConverter } from "../../Engine/Model/Converter";
-import xfile from "./Cup.x?raw";
-
 
 export class Cup extends Model {
-  constructor() {
-    const faces = new XFileConverter().convert(xfile);
-    super(faces);
+  static async load() {
+    const faces = await new XFileConverter().load("./Cup.x");
+    return new Cup(faces);
   }
 }

@@ -22,7 +22,7 @@ export class Camera {
     return this;
   }
 
-  _moveLookAt({ dx = 0, dy = 0, dz = 0 }: { dx?: number, dy?: number, dz?: number }) {
+  private _moveLookAt({ dx = 0, dy = 0, dz = 0 }: { dx?: number, dy?: number, dz?: number }) {
     this.lookAt.x += dx;
     this.lookAt.y += dy;
     this.lookAt.z += dz;
@@ -34,10 +34,20 @@ export class Camera {
     return this;
   }
 
-  moveDirection(forward: number) {
-    const vec = this.lookAt.subtract(this.position).toNormalizedVector();
-    this._move({ dx: vec.x * forward, dy: vec.y * forward, dz: vec.z * forward })
-    this._moveLookAt({ dx: vec.x * forward, dy: vec.y * forward, dz: vec.z * forward });
+  moveDirection(forward: number, right: number) {
+    const cameraForward = this.lookAt.subtract(this.position).toNormalizedVector();
+    const worldUp = new Vector(0, 1, 0);
+    const cameraRight = cameraForward.cross(worldUp).normalize();
+    this._move({
+      dx: cameraForward.x * forward + cameraRight.x * right,
+      dy: cameraForward.y * forward + cameraRight.y * right,
+      dz: cameraForward.z * forward + cameraRight.z * right,
+    })
+    this._moveLookAt({
+      dx: cameraForward.x * forward + cameraRight.x * right,
+      dy: cameraForward.y * forward + cameraRight.y * right,
+      dz: cameraForward.z * forward + cameraRight.z * right,
+    });
     this.calcMatrix();
   }
 

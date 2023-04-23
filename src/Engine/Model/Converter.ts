@@ -3,6 +3,12 @@ import { Face } from "../Face";
 import { Vertex3D } from "../Vertex3D";
 
 export class XFileConverter {
+  async load(path: string) {
+    const file = await fetch(path).then(it => it.text());
+    return this.convert(file);
+  }
+
+
   convert(xfile: string) {
     const { vertics, faces } = this.#toJson(xfile);
     return faces.map(f => new Face(
