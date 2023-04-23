@@ -2,7 +2,7 @@ import { Color } from "../Color";
 import { Face } from "../Face";
 import { Vertex3D } from "../Vertex3D";
 
-export class XFileConverter {
+export class XFileLoader {
   async load(path: string) {
     const file = await fetch(path).then(it => it.text());
     return this.convert(file);

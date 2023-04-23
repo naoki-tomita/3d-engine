@@ -1,9 +1,9 @@
 import { Model } from "../../Engine";
-import { XFileConverter } from "../../Engine/Model/Converter";
+import { XFileLoader } from "../../Engine/Model/XFileLoader";
 
 export class Cup extends Model {
   static async load() {
-    const faces = await new XFileConverter().load("./Cup.x");
+    const faces = await new XFileLoader().load("./Cup.x");
     return new Cup(faces);
   }
 }

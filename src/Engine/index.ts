@@ -1,13 +1,13 @@
 import { Camera } from "./Camera";
 import { Face } from "./Face";
 import { Model } from "./Model";
-import { XFileConverter } from "./Model/Converter";
+import { XFileLoader } from "./Model/XFileLoader";
 import { CanvasView } from "./View";
 import { Vertex3D } from "./Vertex3D";
 import { Vertex2D } from "./Vertex2D";
 import { Vector } from "./Vector";
 import { Color } from "./Color";
-export { Model, CanvasView, Camera, Face, Vertex3D, Vertex2D, Vector, Color, XFileConverter as Converter };
+export { Model, CanvasView, Camera, Face, Vertex3D, Vertex2D, Vector, Color, XFileLoader };
 
 
 type Opt = {
