@@ -1,9 +1,9 @@
-import { Color } from "./Color";
+import { Material } from "./Material";
 import { Vector } from "./Vector";
 import { Vertex3D } from "./Vertex3D";
 
 export class Face {
-  constructor(readonly v1: Vertex3D, readonly v2: Vertex3D, readonly v3: Vertex3D, readonly color: Color) {}
+  constructor(readonly v1: Vertex3D, readonly v2: Vertex3D, readonly v3: Vertex3D, readonly material: Material) {}
   get normalVector(): Vector {
     const vec1 = this.v2.subtract(this.v1).toVector();
     const vec2 = this.v3.subtract(this.v2).toVector();

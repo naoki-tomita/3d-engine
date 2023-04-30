@@ -40,6 +40,5 @@ export class Model {
       v.y = result[1][0] / result[3][0];
       v.z = result[2][0] / result[3][0];
     });
-    console.log(this.center);
   }
 }

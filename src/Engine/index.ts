@@ -6,7 +6,8 @@ import { CanvasView } from "./View";
 import { Vertex3D } from "./Vertex3D";
 import { Vertex2D } from "./Vertex2D";
 import { Vector } from "./Vector";
-import { Color } from "./Color";
+import { Color } from "./Material/Color";
+import { Texture } from "./Material/Texture";
 export { Model, CanvasView, Camera, Face, Vertex3D, Vertex2D, Vector, Color, XFileLoader };
 
 
@@ -27,7 +28,7 @@ export class Stage {
         this.camera.convertPosition(f.v1),
         this.camera.convertPosition(f.v2),
         this.camera.convertPosition(f.v3),
-        f.color,
+        f.material,
       ))
     ).flat();
 
@@ -41,8 +42,14 @@ export class Stage {
       .filter(f => f.center.toVector().angle(f.normalVector) <= 0)
       .forEach(f => {
         // light の方向に法線ベクトルが向いている面は明るく、そうでない面は暗くする
-        const color = this.options.adjustBrightness ? f.color.darken(1 - (f.normalVector.angle(light) + 1) / 2) : f.color;
-        this.view.draw(this.camera.project(f.v1), this.camera.project(f.v2), this.camera.project(f.v3), color, this.options.drawStroke ? Color.Black : color);
+        if (f.material.type === "Color") {
+          const _color = f.material as Color;
+          const color = this.options.adjustBrightness ? _color.darken(1 - (f.normalVector.angle(light) + 1) / 2) : _color;
+          this.view.draw(this.camera.project(f.v1), this.camera.project(f.v2), this.camera.project(f.v3), color, this.options.drawStroke ? Color.Black : color);
+        } else {
+          const _texture = f.material as Texture;
+          this.view.drawImage(this.camera.project(f.v1), this.camera.project(f.v2), this.camera.project(f.v3), _texture);
+        }
       });
 
   }

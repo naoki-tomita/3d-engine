@@ -1,4 +1,4 @@
-import { Color } from "../Color";
+import { Color } from "../Material/Color";
 import { Face } from "../Face";
 import { Vertex3D } from "../Vertex3D";
 
