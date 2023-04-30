@@ -1,21 +1,46 @@
-import { Stage, Camera, CanvasView, Vertex3D } from "./src/Engine";
+import { Stage, Camera, CanvasView, Vertex3D, Model } from "./src/Engine";
 import { Cube } from "./src/Models/Cube";
 import { Cup } from "./src/Models/Cup";
+import { Plane } from "./src/Models/Plane";
 import { TexturedPlane } from "./src/Models/TexturedPlane";
 import { Van } from "./src/Models/Van";
 
 
 async function main() {
+  function _switch(objects: any[], object: any) {
+    if (objects.includes(object)) {
+      return objects.filter(it => object !== it)
+    } else {
+      return [...objects, object];
+    }
+  }
+
+
   const adjustBrightness = document.getElementById("adjust-brightness") as HTMLInputElement;
   const drawStroke = document.getElementById("draw-stroke") as HTMLInputElement;
+  const selector = document.getElementById("object-selector");
+  [...selector?.querySelectorAll("input")!].forEach(el => {
+    el.addEventListener("change", () => {
+      objectList = _switch(objectList, objectMap[el.id]);
+      stage.setObjects(objectList);
+    });
+  });
+
+
+
   const camera = new Camera(new Vertex3D(5, 5, 5), new Vertex3D(0, 0, 0));
-  const obj1 = new Cube(0, 0, 1, 0.1);
-  const obj2 = new Cube(0, 0, 3, 0.5);
+  const box1 = new Cube(0, 0, 1, 0.1);
+  const box2 = new Cube(0, 0, 3, 0.5);
+  const car = await Van.load().then(it => it.move({ dy: 0, dz: -5 }));
   const cup = await Cup.load().then(it => it.move({ dy: -1, dz: 3 }));
-  const van = await Van.load().then(it => it.move({ dy: 0, dz: -5 }));
-  const tex = await TexturedPlane.load(0, 0, 5, 5);
+  const plane1 = await TexturedPlane.load(0, 0, 5, 5);
+  const plane2 = Plane.load(0, 0, 5, 5);
+  const objectMap = {
+    box1, box2, car, cup, plane1, plane2
+  }
+  let objectList: Model[] = []
   const view = new CanvasView();
-  const stage = new Stage(view, camera, [obj1, tex], { adjustBrightness: adjustBrightness.checked, drawStroke: drawStroke.checked })
+  const stage = new Stage(view, camera, objectList, { adjustBrightness: adjustBrightness.checked, drawStroke: drawStroke.checked })
   adjustBrightness.addEventListener("change", () => stage.setOptions({ adjustBrightness: adjustBrightness.checked }))
   drawStroke.addEventListener("change", () => stage.setOptions({ drawStroke: drawStroke.checked }));
 
@@ -68,7 +93,6 @@ async function main() {
         .move({ dy: -0.3 })
         .moveLookAt({ dy: -0.3 });
     }
-    camera.setLookAt(tex.center);
     requestAnimationFrame(processInput);
   }
   requestAnimationFrame(processInput);

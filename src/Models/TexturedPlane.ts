@@ -12,14 +12,9 @@ function loadImage() {
 export class TexturedPlane extends Model {
   static async load(x: number, z: number, width: number, depth: number) {
     const image = await loadImage();
-    // return new TexturedPlane([
-    //   new Face(new Vertex3D(x, 0, z), new Vertex3D(x + width, 0, z + depth), new Vertex3D(x + width, 0, z), new Texture(image, new Vertex2D(1, 1), new Vertex2D(1023, 1024), new Vertex2D(1024, 1))),
-    //   new Face(new Vertex3D(x, 0, z), new Vertex3D(x, 0, z + depth), new Vertex3D(x + width, 0, z + depth), new Texture(image, new Vertex2D(1, 1), new Vertex2D(1, 1024), new Vertex2D(1024, 1023))),
-    // ]);
-
     return new TexturedPlane([
-      new Face(new Vertex3D(x, 0, z), new Vertex3D(x + width, 0, z + depth), new Vertex3D(x + width, 0, z), Color.Yellow),
-      new Face(new Vertex3D(x, 0, z), new Vertex3D(x, 0, z + depth), new Vertex3D(x + width, 0, z + depth), Color.Green),
+      new Face(new Vertex3D(x, 0, z), new Vertex3D(x + width, 0, z + depth), new Vertex3D(x + width, 0, z), new Texture(image, new Vertex2D(1, 1), new Vertex2D(1023, 1024), new Vertex2D(1024, 1))),
+      new Face(new Vertex3D(x, 0, z), new Vertex3D(x, 0, z + depth), new Vertex3D(x + width, 0, z + depth), new Texture(image, new Vertex2D(1, 1), new Vertex2D(1, 1024), new Vertex2D(1024, 1023))),
     ]);
   }
 }

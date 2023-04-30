@@ -16,10 +16,14 @@ type Opt = {
   adjustBrightness?: boolean;
 };
 export class Stage {
-  constructor(readonly view: CanvasView, readonly camera: Camera, readonly objects: Model[], private options: Opt = {}) {}
+  constructor(readonly view: CanvasView, readonly camera: Camera, private objects: Model[], private options: Opt = {}) {}
   setOptions(opt: Opt) {
     this.options.adjustBrightness = opt.adjustBrightness ?? this.options.adjustBrightness;
     this.options.drawStroke = opt.drawStroke ?? this.options.drawStroke;
+  }
+
+  setObjects(objects: Model[]) {
+    this.objects = objects;
   }
 
   render() {
