@@ -1,4 +1,5 @@
 import { Face, Vertex3D } from "..";
+import { Matrix } from "../Matrix";
 
 export class Model {
   constructor(readonly faces: Face[]) {}
@@ -20,15 +21,25 @@ export class Model {
   }
 
   rotate(theta: number, phi: number, center: Vertex3D = this.center) {
-    const ct = Math.cos(theta), st = Math.sin(theta), cp = Math.cos(phi), sp = Math.sin(phi);
-    this.vertices.forEach((v) => {
-      const x = v.x - center.x,
-            y = v.y - center.y,
-            z = v.z - center.z;
-
-      v.x = ct * x - st * cp * z + st * sp * y + center.x;
-      v.z = st * x + ct * cp * z - ct * sp * y + center.z;
-      v.y = sp * z + cp * y + center.y;
+    const tMove = Matrix.move({
+      dx: -center.x,
+      dy: -center.y,
+      dz: -center.z,
     });
+    const rotate = Matrix.rotateY(theta);
+    const move = Matrix.move({
+      dx: center.x,
+      dy: center.y,
+      dz: center.z,
+    });
+    const a = Matrix.product(tMove, rotate)
+    const r = Matrix.product(a, move);
+    this.vertices.forEach(v => {
+      const result = Matrix.product(rotate, [[v.x], [v.y], [v.z], [1]]);
+      v.x = result[0][0] / result[3][0];
+      v.y = result[1][0] / result[3][0];
+      v.z = result[2][0] / result[3][0];
+    });
+    console.log(this.center);
   }
 }
