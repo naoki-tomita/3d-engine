@@ -34,6 +34,14 @@ export class Camera {
     return this;
   }
 
+  setLookAt({ x, y, z }: { x: number, y: number, z: number }) {
+    this.lookAt.x = x;
+    this.lookAt.y = y;
+    this.lookAt.z = z;
+    this.calcMatrix();
+    return this;
+  }
+
   moveDirection(forward: number, right: number) {
     const cameraForward = this.lookAt.subtract(this.position).toNormalizedVector();
     const worldUp = new Vector(0, 1, 0);
@@ -101,7 +109,6 @@ export class Camera {
   }
 
   convertPosition(v: Vertex3D): Vertex3D {
-    const r = this.transformVector(this.matrix, this.position.subtract(v));
-    return r;
+    return this.transformVector(this.matrix, this.position.subtract(v));
   }
 }
