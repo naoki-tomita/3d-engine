@@ -73,6 +73,25 @@ export class Camera {
     return this;
   }
 
+  getVerticalAngle() {
+    const cameraForward = this.lookAt.subtract(this.position).toNormalizedVector();
+    const worldUp = new Vector(0, 1, 0);
+    const cameraRight = cameraForward.cross(worldUp).normalize();
+    const zeroAngleVector = worldUp.cross(cameraRight).normalize();
+    const angle = zeroAngleVector.angle(cameraForward);
+    return angle;
+  }
+
+  getHorizontalAngle() {
+    const cameraForward = this.lookAt.subtract(this.position).toNormalizedVector();
+    const worldUp = new Vector(0, 1, 0);
+    const cameraRight = cameraForward.cross(worldUp).normalize();
+    const zeroAngleVector = worldUp.cross(cameraRight).normalize();
+    const horizontalVec = new Vector(1, 0, 0);
+    const angle = zeroAngleVector.angle(horizontalVec);
+    return angle;
+  }
+
   project(v: Vertex3D): Vertex2D {
     const ratio = (500 / (v.z || 0.000001));
     return new Vertex2D(ratio * v.x, ratio * v.y);

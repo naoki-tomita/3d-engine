@@ -5,27 +5,65 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <script type="module" crossorigin src="./assets/index-28700417.js"></script>
+  <script type="module" crossorigin src="./assets/index-e1e15f96.js"></script>
 </head>
 <body>
-  <div>
-    <input type="checkbox" id="draw-stroke"><label for="draw-stroke">: 面の境界を描画する</label>
+  <style>
+    .menu {
+      top: 20px;
+      left: 20px;
+      position: fixed;
+      width: 240px;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 8px 16px;
+    }
+    canvas {
+      border: 1px solid #ccc;
+    }
+  </style>
+  <button id="open">open menu</button>
+  <div class="menu" style="display: none">
+    <button id="close">close menu</button>
+    <div>
+      <input type="checkbox" id="draw-stroke"><label for="draw-stroke">: 面の境界を描画する</label>
+    </div>
+    <div>
+      <input type="checkbox" checked id="adjust-brightness"><label for="adjust-brightness">: 明るさを調節する</label>
+    </div>
+    <div id="object-selector" style="display: flex; flex-wrap: wrap;">
+      <div>
+        <input type="checkbox" id="box1"/><label for="box1">箱1</label>
+      </div>
+      <div>
+        <input type="checkbox" id="box2"/><label for="box2">箱2</label>
+      </div>
+      <div>
+        <input type="checkbox" id="car"/><label for="car">車</label>
+      </div>
+      <div>
+        <input type="checkbox" id="cup"/><label for="cup">コップ</label>
+      </div>
+      <div>
+        <input type="checkbox" id="plane1"/><label for="plane1">板（テクスチャ）</label>
+      </div>
+      <div>
+        <input type="checkbox" id="plane2"/><label for="plane2">板</label>
+      </div>
+    </div>
   </div>
-  <div>
-    <input type="checkbox" checked id="adjust-brightness"><label for="adjust-brightness">: 明るさを調節する</label>
-  </div>
-  <div id="object-selector">
-    <input type="checkbox" id="box1"/><label>箱1</label>
-    <input type="checkbox" id="box2"/><label>箱2</label>
-    <input type="checkbox" id="car"/><label>車</label>
-    <input type="checkbox" id="cup"/><label>コップ</label>
-    <input type="checkbox" id="plane1"/><label>板</label>
-    <input type="checkbox" id="plane2"/><label>板（テクスチャ）</label>
-  </div>
+
+  <script>
+    const open = document.getElementById("open");
+    const close = document.getElementById("close");
+    const menu = document.querySelector(".menu")
+    open.onclick = () => menu.style.display = "block";
+    close.onclick = () => menu.style.display = "none";
+  </script>
   <div>
     <canvas width="800" height="720">
   </div>
   
-  <canvas id="buf"></canvas>
+  <!-- <canvas id="buf"></canvas> -->
 </body>
 </html>

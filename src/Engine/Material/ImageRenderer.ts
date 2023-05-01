@@ -117,11 +117,13 @@ function rgba(r: number, g: number, b: number, a: number) {
 
 export function createRenderer(width: number, height: number) {
   const buf = document.createElement("canvas");
+  // const buf = document.getElementById("buf") as HTMLCanvasElement;
   const bufc = buf.getContext("2d", { willReadFrequently: true })!;
   function renderImage(srcImg: HTMLImageElement, srcPoints: Triangle, dst: CanvasRenderingContext2D, dstPoints: Triangle) {
     const trDstPoints = dstPoints.map(it => ({ x: Math.floor(it.x + (width / 2)), y: Math.floor(-it.y + (height / 2)) })) as Triangle
     buf.width = width;
     buf.height = height;
+    bufc.clearRect(0, 0, buf.width, buf.height);
     bufc.setTransform(...calcAffineMatrix(srcPoints, trDstPoints));
     bufc.drawImage(srcImg, 0, 0);
 
@@ -132,14 +134,16 @@ export function createRenderer(width: number, height: number) {
     const imageData = bufc.getImageData(0, 0, buf.width, buf.height);
     for (let x = xMin; x <= xMax; x++) {
       for (let y = yMin; y <= yMax; y++) {
+        if (x >= buf.width || y >= buf.height) continue;
         if (isInsideTriangle(trDstPoints, x, y)) {
-          const [r, g, b, a] = imageData.data.slice((x + (y * imageData.width)) * 4, (x + (y * imageData.width)) * 4 + 4);
-          const color = rgba(r, g, b, a);
-          dst.fillStyle = color;
-          dst.fillRect(x, y, 1, 1);
+
+        } else {
+          imageData.data.set([0, 0, 0, 0], (x + (y * imageData.width)) * 4);
         }
       }
     }
+    bufc.putImageData(imageData, 0, 0);
+    dst.drawImage(buf, xMin, yMin, xMax - xMin, yMax - yMin, xMin, yMin, xMax - xMin, yMax - yMin);
   }
   return renderImage;
 }

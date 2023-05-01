@@ -39,6 +39,7 @@ export class Stage {
     const light = new Vector(100, 100, -100);
     this.view.clear()
     cameraCoordFaces
+      // 奥行きがカメラから遠いものほど先に描画する（手前にあるものを最後に描画する）
       .sort((a, b) => a.center.z - b.center.z)
       // カメラの前方にいるものだけ描画する
       .filter(f => (f.v1.z < 0) && (f.v2.z < 0) && (f.v3.z < 0))
